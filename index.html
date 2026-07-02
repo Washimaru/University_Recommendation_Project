@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniMatch — Find your university by vibe, not just stats</title>
+<meta name="description" content="A holistic university recommender. Hard limits first, then ranking by how a school actually feels — culture, pace, and how you like to learn.">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand"><span class="dot"></span>Uni<b>Match</b></a>
+    <div class="nav-links">
+      <a href="#top">Home</a>
+      <a href="#browse">Browse</a>
+      <a href="#majorfinder">Major Finder</a>
+      <a href="#explore">Explore</a>
+      <a href="#about">About</a>
+    </div>
+    <button class="icon-btn nav-fav" id="favBtn" title="Favorites">♥
+      <span class="count" id="favCount" style="display:none">0</span>
+    </button>
+    <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<!-- HERO -->
+<header class="hero wrap">
+  <span class="eyebrow">Holistic matching · not just filters</span>
+  <h1>Find the university that <span class="g">fits who you are</span></h1>
+  <p>Most tools filter by tuition and test scores and hand you a generic list. UniMatch sets your hard limits first, then ranks what's left by how each campus actually <i>feels</i> — culture, pace, and the way you like to learn.</p>
+  <div class="cta">
+    <a href="#wizard" class="btn">Start matching →</a>
+    <a href="#how" class="btn ghost">How it works</a>
+  </div>
+  <div class="hero-stats">
+    <div><b id="statUnis">54</b><span>universities · <span id="statCtry">7</span> countries</span></div>
+    <div><b>6</b><span>culture dimensions</span></div>
+    <div><b>2</b><span>layers: hard limits + vibe</span></div>
+  </div>
+</header>
+
+<!-- WIZARD -->
+<main class="wizard wrap" id="wizard">
+  <!-- progress -->
+  <div class="progress">
+    <div class="bar"></div>
+    <div class="pstep active" data-s="0"><div class="pc">1</div><div class="pl">Archetype</div></div>
+    <div class="pstep" data-s="1" data-goto-2><div class="pc">2</div><div class="pl">Profile &amp; limits</div></div>
+    <div class="pstep" data-s="2"><div class="pc">3</div><div class="pl">Vibe check</div></div>
+  </div>
+
+  <div class="panel">
+    <!-- STEP 1 -->
+    <section class="step show">
+      <h2>Pick a starting archetype</h2>
+      <p class="sub">Optional — each one presets your vibe sliders. You can fine-tune everything afterward.</p>
+      <div class="arch-grid" id="archGrid"></div>
+      <div class="wiz-nav">
+        <span></span>
+        <button class="btn" data-next>Next: your profile →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2>Your profile &amp; hard limits</h2>
+      <p class="sub">Layer 1 — these eliminate schools that genuinely don't fit. Leave anything blank to ignore it.</p>
+      <div class="grid3">
+        <div><label class="fld">Intended major / field</label><select id="major"></select></div>
+        <div><label class="fld">Your GPA (4.0 scale)</label><input type="number" id="gpa" min="0" max="4" step="0.01" placeholder="e.g. 3.7"></div>
+        <div><label class="fld">Max net price / yr (USD, after aid)</label><input type="number" id="budget" min="0" step="1000" placeholder="e.g. 35000"></div>
+      </div>
+      <div class="grid3" style="margin-top:18px">
+        <div><label class="fld">Preferred region <span style="color:var(--faint)">(soft)</span></label><select id="region"></select></div>
+        <div><label class="fld">Campus setting</label>
+          <select id="setting">
+            <option value="">No preference</option>
+            <option value="urban">Urban / big city</option>
+            <option value="suburban">Suburban / college town</option>
+            <option value="rural">Rural / remote</option>
+          </select>
+        </div>
+        <div><label class="fld">Institution type <span style="color:var(--faint)">(hard filter)</span></label>
+          <select id="instType">
+            <option value="">Public or private</option>
+            <option value="Public">Public only</option>
+            <option value="Private">Private only</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:18px">
+        <label class="fld">Background <span style="color:var(--faint)">(only flags schools with strong support &amp; community for you — never excludes any school)</span></label>
+        <div class="chips" id="bgChips"></div>
+      </div>
+      <div class="grid2" style="margin-top:18px">
+        <div>
+          <label class="fld">MBTI personality type <span style="color:var(--faint)">(optional — nudges your vibe match)</span></label>
+          <select id="mbti">
+            <option value="">Not sure / skip</option>
+            <optgroup label="Analysts">
+              <option value="INTJ">INTJ · Architect</option><option value="INTP">INTP · Logician</option>
+              <option value="ENTJ">ENTJ · Commander</option><option value="ENTP">ENTP · Debater</option>
+            </optgroup>
+            <optgroup label="Diplomats">
+              <option value="INFJ">INFJ · Advocate</option><option value="INFP">INFP · Mediator</option>
+              <option value="ENFJ">ENFJ · Protagonist</option><option value="ENFP">ENFP · Campaigner</option>
+            </optgroup>
+            <optgroup label="Sentinels">
+              <option value="ISTJ">ISTJ · Logistician</option><option value="ISFJ">ISFJ · Defender</option>
+              <option value="ESTJ">ESTJ · Executive</option><option value="ESFJ">ESFJ · Consul</option>
+            </optgroup>
+            <optgroup label="Explorers">
+              <option value="ISTP">ISTP · Virtuoso</option><option value="ISFP">ISFP · Adventurer</option>
+              <option value="ESTP">ESTP · Entrepreneur</option><option value="ESFP">ESFP · Entertainer</option>
+            </optgroup>
+          </select>
+        </div>
+        <div>
+          <label class="fld">Your activities &amp; interests <span style="color:var(--faint)">(type your own, comma-separated)</span></label>
+          <input type="text" id="activities" placeholder="e.g. robotics, debate, volunteering, jazz band, hiking">
+        </div>
+      </div>
+      <div class="wiz-nav">
+        <button class="btn ghost" data-prev>← Back</button>
+        <span class="live-count"><b>0</b> schools clear your hard limits</span>
+        <button class="btn" data-next>Next: the vibe check →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2>The vibe check</h2>
+      <p class="sub">Layer 2 — these never filter anyone out. They rank the survivors by fit. Drag toward whichever side is more <i>you</i>.</p>
+      <div id="sliders"></div>
+      <div class="slider-row" style="margin-top:8px">
+        <label class="fld">Class size you'd thrive in</label>
+        <select id="classsize">
+          <option value="">No preference</option>
+          <option value="small">Small seminars, close mentorship</option>
+          <option value="mixed">A mix is fine</option>
+          <option value="large">Big lectures &amp; independence are fine</option>
+        </select>
+      </div>
+      <div class="wiz-nav">
+        <button class="btn ghost" data-prev>← Back</button>
+        <span class="live-count"><b>0</b> schools to rank</span>
+        <div style="display:flex;gap:10px">
+          <button class="btn ghost" id="resetBtn">Reset</button>
+          <button class="btn" id="goBtn">✨ Show my matches</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- RESULTS -->
+<section class="results-section wrap" id="results">
+  <div class="res-head">
+    <div>
+      <h2>Your top matches</h2>
+      <span class="muted" id="resCount">—</span>
+    </div>
+  </div>
+  <div class="toolbar">
+    <span class="muted" style="font-size:13px">Sort</span>
+    <div class="seg" id="sortSeg">
+      <button class="on" data-sort="match">Best match</button>
+      <button data-sort="price">Lowest price</button>
+      <button data-sort="size">Smallest</button>
+      <button data-sort="selectivity">Most selective</button>
+    </div>
+    <span class="muted" style="font-size:13px;margin-left:6px">Filter</span>
+    <div id="tierFilter" style="display:flex;gap:8px">
+      <button class="chip filter-chip" data-tier="reach">Reach</button>
+      <button class="chip filter-chip" data-tier="target">Target</button>
+      <button class="chip filter-chip" data-tier="safety">Safety</button>
+    </div>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="more-wrap"><button class="btn ghost" id="resMore">Show more schools</button></div>
+</section>
+
+<!-- BROWSE / SEARCH -->
+<section class="section wrap" id="browse">
+  <h2>Browse &amp; search all schools</h2>
+  <p class="lead">Look up any of <b id="browseN">360+</b> schools by name, city, country, or major — then click for the full profile.</p>
+  <div class="browse-bar">
+    <input type="text" id="browseSearch" placeholder="🔎  Search e.g. “Berkeley”, “Boston”, “music”, “nursing”…" autocomplete="off">
+    <select id="browseType">
+      <option value="">All types</option>
+      <option value="Public">Public</option>
+      <option value="Private">Private</option>
+    </select>
+  </div>
+  <div class="browse-count" id="browseCount"></div>
+  <div class="b-list" id="browseList"></div>
+  <div class="more-wrap"><button class="btn ghost" id="browseMore">Show more schools</button></div>
+</section>
+
+<!-- MAJOR FINDER -->
+<section class="section wrap" id="majorfinder">
+  <h2>Major Finder</h2>
+  <p class="lead">Not sure what to study? Tell us about your courses, activities and personality — we'll suggest majors and show where each one tends to lead after graduation.</p>
+  <div class="panel" style="max-width:840px;margin:0 auto">
+    <label class="fld">Courses you enjoyed or took <span style="color:var(--faint)">(pick any)</span></label>
+    <div class="chips" id="mfCourses"></div>
+    <div class="grid2" style="margin-top:18px">
+      <div><label class="fld">Your activities &amp; interests <span style="color:var(--faint)">(type your own)</span></label>
+        <input type="text" id="mfActivities" placeholder="e.g. robotics, volunteering, debate, jazz band"></div>
+      <div><label class="fld">MBTI personality type <span style="color:var(--faint)">(optional)</span></label>
+        <select id="mfMbti"></select></div>
+    </div>
+    <div id="mfSliders" style="margin-top:6px"></div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn" id="mfGo">✨ Recommend my majors</button>
+    </div>
+  </div>
+  <div id="mfResults"></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section wrap" id="how">
+  <h2>How the matching works</h2>
+  <p class="lead">A dual-layer model: hard constraints remove the impossible, then a similarity score ranks everything that's left by genuine fit.</p>
+  <div class="how">
+    <div class="h-card"><div class="n">1</div><h3>Hard boundaries</h3><p>Your major must be offered and the estimated net price must sit under your ceiling. Anything that fails is dropped — no false hope.</p></div>
+    <div class="h-card"><div class="n">2</div><h3>Vibe vectors</h3><p>Every school carries a 6-dimension culture profile. Your sliders build a matching vector, and cosine similarity scores how aligned you are.</p></div>
+    <div class="h-card"><div class="n">3</div><h3>Soft nudges</h3><p>Region, campus setting, class size, budget headroom and community fit adjust the ranking — they shape order, never exclude.</p></div>
+    <div class="h-card"><div class="n">4</div><h3>Explore</h3><p>Sort, filter by reach/target/safety, save favorites, and compare up to three side-by-side with full vibe breakdowns.</p></div>
+  </div>
+</section>
+
+<!-- EXPLORE (OLAP) -->
+<section class="section wrap" id="explore">
+  <h2>Explore the data</h2>
+  <p class="lead">Live aggregate queries across all <b id="exploreN">300+</b> schools, run on an in-browser columnar (OLAP) database. Slice the dataset by any dimension and metric.</p>
+  <div class="exp-controls">
+    <div>
+      <label class="fld">Group by</label>
+      <select id="expDim">
+        <option value="region">Region</option>
+        <option value="type">Institution type</option>
+        <option value="setting">Campus setting</option>
+        <option value="country">Country</option>
+      </select>
+    </div>
+    <div>
+      <label class="fld">Metric</label>
+      <select id="expMetric">
+        <option value="avg_net">Avg. est. net price</option>
+        <option value="count">Number of schools</option>
+        <option value="avg_gpa">Avg. admit GPA</option>
+        <option value="avg_size">Avg. undergrad size</option>
+      </select>
+    </div>
+  </div>
+  <div class="exp-engine" id="expEngine">Loading database…</div>
+  <pre class="exp-sql" id="expSql"></pre>
+  <div class="exp-chart" id="expChart"></div>
+</section>
+
+<!-- ABOUT -->
+<section class="section wrap" id="about">
+  <h2>About UniMatch</h2>
+  <p class="lead">Built to move past transactional filtering toward experiential matching. Figures (size, estimated net price, typical admit GPA, setting) are approximate public-data estimates and may have changed — always verify on official sites. Vibe ratings are editorial estimates of campus culture, not official metrics. This is a tool for exploration, not admissions advice.</p>
+</section>
+
+<!-- COMPARE TRAY -->
+<div class="tray" id="tray">
+  <div class="slots" id="traySlots"></div>
+  <button class="btn sm" id="cmpGo">Compare</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-back" id="modalBack"><div class="modal" id="modal"></div></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<footer>
+  UniMatch · a holistic university recommender &nbsp;·&nbsp; data &amp; vibe ratings are approximate, for exploration only<br>
+  Built as a static site — your favorites &amp; theme are saved locally in your browser.
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/data2.js"></script>
+<script src="js/data3.js"></script>
+<script src="js/data4.js"></script>
+<script src="js/details.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/majors.js"></script>
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+<script>
+  document.getElementById("statUnis").textContent = window.UM.data.UNIS.length;
+  document.getElementById("statCtry").textContent = new Set(window.UM.data.UNIS.map(u => u.ctry)).size;
+</script>
+</body>
+</html>

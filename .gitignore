@@ -1,0 +1,9 @@
+# dependencies (only used for local testing, not part of the site)
+node_modules/
+package-lock.json
+package.json
+
+# OS / editor cruft
+.DS_Store
+*.log
+Thumbs.db
